@@ -1,90 +1,88 @@
+"""
+    Author: Charles Candelaria
+    Date: 05/07/2023
+    Functionality: Imports csv stocks and bonds files and outputs a financial report.
+"""
 from datetime import datetime
 from os.path import exists
 
-from lib.finance import Investor, Stock, Bond
-from lib.utils import CSVPropertyMapper, fill_from_csv
+from lib.finance import Investor
+from lib.utils import import_bonds, import_stocks
 
+# Source data files
 BONDS_FILE_PATH = './files/Lesson6_Data_Bonds.csv'
 STOCKS_FILE_PATH = './files/Lesson6_Data_Stocks.csv'
 
-def import_stocks(stocks_csv_file_path, investor):
+
+def write_to_file(investor, file_path):
+    """Writes investor report to file. WILL OVERWRITE EXISTING FILE DATA"""
     try:
-        stock_mapper = CSVPropertyMapper() \
-                            .add_mapping(0, 'symbol') \
-                            .add_mapping(1, 'shares') \
-                            .add_mapping(2, 'purchase_price') \
-                            .add_mapping(3, 'current_value') \
-                            .add_mapping(4, 'purchase_date')
-
-        stock_data: list[Stock] = fill_from_csv(stocks_csv_file_path, Stock, stock_mapper)
-
-        for stock in stock_data:
-            investor.record_stock_purchase(stock)
-    except Exception as e:
-        print(f'Failed to parse stocks for investor err::{str(e)}')
-
-def import_bonds(bonds_csv_file_path, investor):
-    try:
-        bond_mapper = CSVPropertyMapper() \
-                            .add_mapping(0, 'symbol') \
-                            .add_mapping(1, 'shares') \
-                            .add_mapping(2, 'purchase_price') \
-                            .add_mapping(3, 'current_value') \
-                            .add_mapping(4, 'purchase_date') \
-                            .add_mapping(5, 'coupon') \
-                            .add_mapping(6, 'bond_yield')
-
-        bond_data: list[Stock] = fill_from_csv(bonds_csv_file_path, Bond, bond_mapper)
-
-        for bond in bond_data:
-            investor.record_bond_purchase(bond)
-    except Exception as e:
-        print(f'Failed to parse bonds for investor err::{str(e)}')
-
-
-def generate(investor, file_path):
-    try:
+        # open file in write mode
         with open(file_path, 'w') as report:
+            # write stocks report
             report.writelines(investor.generate_stocks_report())
             report.writelines('\n')
+            # write bonds report
             report.writelines(investor.generate_bonds_report())
         print(f'{file_path} generated')
     except Exception as e:
-        print(f'Failed to generate file {e}')   
+        # catch file errors
+        print(f'Failed to generate file {e}')
+
 
 def generate_investor_report(investor):
+    """
+        Generate investor report dialogue.
+        - Asks if report is desired
+        - Confirms overwrite if file already exists
+    """
+    # hold look exist strategy
     doExit = False
+    # generated file name {investor}_investment_report_{current date}.txt
     output_file_name = f"{investor.name.lower().replace(' ', '_')}_investment_report_{datetime.today().strftime('%m_%d_%Y')}.txt"
 
+    # cycles through prompts
     while not doExit:
-        doGenerate = input(f'Generate investment report for {investor.name.title()}? Type: yes or no \n').lower()
+        # capture if report is wanted
+        doGenerate = input(
+            f'Generate investment report for {investor.name.title()}? Type: yes or no \n').lower()
 
         if doGenerate == 'yes':
+            # generate report
             if exists(output_file_name):
-                doContinue = input(f'Warning! {output_file_name} already exists, continuing will overwrite it\'s contents.\nDo you wish to continue? Type yes or no \n').lower()
+                # if report file already exists confirm overwrite
+                doContinue = input(
+                    f'Warning! {output_file_name} already exists, continuing will overwrite it\'s contents.\nDo you wish to continue? Type yes or no \n').lower()
 
                 if doContinue == 'yes':
-                    generate(investor, output_file_name)
+                    # create report & exit
+                    write_to_file(investor, output_file_name)
                     doExit = True
                 elif doContinue == 'no':
+                    # exit
                     doExit = True
                 else:
+                    # NOOP restart dialogue
                     print(f"Sorry, I don't understand \"{doContinue}\"")
             else:
-                generate(investor, output_file_name)
+                # report file does not already exist, generate and exit
+                write_to_file(investor, output_file_name)
                 doExit = True
         elif doGenerate == 'no':
+            # exit
             doExit = True
-        else: 
+        else:
+            # NOOP restart dialogue
             print(f"Sorry, I don't understand \"{doGenerate}\"")
-
+    # exit message
     print('Exiting...')
 
 
-
-
-investor = Investor(name='Bob Smith', address='123 fake St.', phone_number='123-123-1234')
+# Create investor
+investor = Investor(name='Bob Smith', address='123 fake St.',
+                    phone_number='123-123-1234')
+# get investment data
 import_stocks(STOCKS_FILE_PATH, investor)
 import_bonds(BONDS_FILE_PATH, investor)
+# output report
 generate_investor_report(investor)
-
