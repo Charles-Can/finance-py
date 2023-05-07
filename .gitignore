@@ -1,0 +1,7 @@
+*_investment_report*.txt
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+.vscode
