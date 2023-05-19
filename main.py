@@ -78,11 +78,17 @@ def generate_investor_report(investor):
     print('Exiting...')
 
 
-# Create investor
-investor = Investor(name='Bob Smith', address='123 fake St.',
-                    phone_number='123-123-1234')
-# get investment data
-import_stocks(STOCKS_FILE_PATH, investor)
-import_bonds(BONDS_FILE_PATH, investor)
-# output report
-generate_investor_report(investor)
+def main()):
+
+    # Create investor
+    investor = Investor(name='Bob Smith', address='123 fake St.',
+                        phone_number='123-123-1234')
+    # get investment data
+    import_stocks(STOCKS_FILE_PATH, investor)
+    import_bonds(BONDS_FILE_PATH, investor)
+    # output report
+    generate_investor_report(investor)
+
+
+if __name__ == '__main__':
+    main()
