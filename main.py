@@ -16,6 +16,8 @@ BONDS_FILE_PATH = './files/Lesson6_Data_Bonds.csv'
 STOCKS_FILE_PATH = './files/Lesson6_Data_Stocks.csv'
 STOCK_PRICES_FILE_PATH = './files/AllStocks.json'
 
+CHART_STYLE = 'Solarize_Light2'
+
 db = sqlite3.connect(':memory:')
 
 investor_store = Investors(db)
@@ -58,7 +60,15 @@ def build_stock_plot_chart_by_investor(investor: Investor) -> tuple[fig.Figure, 
 
         plt.plot(dates, stock_values, label=stock.symbol)
 
+    # Format Chart display
+    plt.title(f'stock values over time for {investor.name}'.title(), fontsize=18)
+    ax.set_xlabel('Date Recorded', fontsize=14)
+    ax.set_ylabel('Shares Value', fontsize=14)
     ax.xaxis.set_major_locator(plt.MaxNLocator(8))
+    plt.legend(loc='upper left')
+
+    plt.xticks(rotation=45)
+
     return (fig, ax)
 
 
@@ -73,9 +83,10 @@ def main():
     insert_bonds_from_file(BONDS_FILE_PATH, investor.id)
     insert_prices_from_file(STOCK_PRICES_FILE_PATH)
 
+    plt.style.use(CHART_STYLE)
+
     build_stock_plot_chart_by_investor(investor)
 
-    plt.legend(loc='upper left')
     plt.show()
 
     db.close()
