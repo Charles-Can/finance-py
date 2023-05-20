@@ -64,19 +64,15 @@ def main():
 
     for st in my_stocks:
         st_prices = prices_store.select_by_symbol(st.symbol)
-        dates = [datetime.strptime(pr.date, '%d-%b-%y') for pr in st_prices]
+        dates = [pr.recorded_date for pr in st_prices]
         values = [float(pr.close) * st.shares for pr in st_prices]
 
         plt.plot(dates, values, label=st.symbol)
 
     ax.xaxis.set_major_locator(plt.MaxNLocator(8))
-
-
     plt.legend(loc='upper left')
     plt.show()
 
-    # output report
-    # generate_investor_report(investor)
     db.close()
 
 
