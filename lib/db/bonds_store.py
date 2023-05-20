@@ -29,9 +29,8 @@ class BondsStore(TableObject):
     def __create_table__(self):
         """Creates bond table"""
 
-        # TODO: this will fail on persistent DBs. Need to figure out a migration strategy
         self.q.execute("""
-            CREATE TABLE bonds (
+            CREATE TABLE IF NOT EXISTS bonds (
                 investor_id INT NOT NULL,
                 symbol TEXT NOT NULL,
                 shares INT,
