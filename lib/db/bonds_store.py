@@ -1,9 +1,15 @@
+"""
+    Author: Charles Candelaria
+    Date: 05/20/2023
+    Functionality: Handles ORM operations for Bond objects with SQLlite
+"""
 from .table_object import TableObject
 from ..utils.mapper import PropertyMapper
 from ..finance import Bond
 
 
 class BondsStore(TableObject):
+    """SQLlite storage api for Bonds"""
 
     def __init__(self, connection):
         super().__init__(connection)
@@ -17,10 +23,13 @@ class BondsStore(TableObject):
             .add_mapping(5, 'current_value') \
             .add_mapping(6, 'purchase_date') \
             .add_mapping(7, 'coupon') \
-            .add_mapping(8, 'bond_yield') \
-
+            .add_mapping(8, 'bond_yield')
+        """Holds bond table tuple mapping to Bond"""
 
     def __create_table__(self):
+        """Creates bond table"""
+
+        # TODO: this will fail on persistent DBs. Need to figure out a migration strategy
         self.q.execute("""
             CREATE TABLE bonds (
                 investor_id INT NOT NULL,
@@ -36,29 +45,39 @@ class BondsStore(TableObject):
         self.connection.commit()
 
     def insert(self, bond: Bond):
-        q = self.q
-        q.execute("INSERT INTO bonds VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                  [bond.investor_id,
-                   bond.symbol,
-                   bond.shares,
-                   bond.purchase_price,
-                   bond.current_value,
-                   bond.purchase_date,
-                   bond.coupon,
-                   bond.bond_yield])
-        bond.id = q.lastrowid
-        self.connection.commit()
+        """Insert a bond into store, updates id on success"""
+        try:
+            q = self.q
+            q.execute("INSERT INTO bonds VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                      [bond.investor_id,
+                       bond.symbol,
+                       bond.shares,
+                       bond.purchase_price,
+                       bond.current_value,
+                       bond.purchase_date,
+                       bond.coupon,
+                       bond.bond_yield])
+            bond.id = q.lastrowid
+            self.connection.commit()
+        except Exception as e:
+            print(f'BondsStore:: failed insert Bond\n{str(e)}')
 
     def select_by_investor_id(self, id) -> list[Bond]:
-        q = self.q
-        data = q.execute("""SELECT rowid AS id, investor_id, symbol, shares, purchase_price, purchase_price, purchase_date, coupon, yield
-                            FROM bonds 
-                            WHERE investor_id = ?""",
-                         [id]).fetchall()
+        """Retrieves Bonds for store by investor id"""
         bonds = []
-        for record in data:
-            bond = Bond()
-            self.__mapper.map_properties(record, bond)
-            bonds.append(bond)
+        try:
+            q = self.q
+            data = q.execute("""SELECT rowid AS id, investor_id, symbol, shares, purchase_price, purchase_price, purchase_date, coupon, yield
+                                FROM bonds 
+                                WHERE investor_id = ?""",
+                             [id]).fetchall()
+            for record in data:
+                bond = Bond()
+                self.__mapper.map_properties(record, bond)
+                bonds.append(bond)
+
+        except Exception as e:
+            print(
+                f'BondsStore:: Failed to retrieve bonds for investor: {id}\n{str(e)}')
 
         return bonds
