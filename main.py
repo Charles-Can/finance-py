@@ -17,6 +17,7 @@ STOCKS_FILE_PATH = './files/Lesson6_Data_Stocks.csv'
 STOCK_PRICES_FILE_PATH = './files/AllStocks.json'
 
 CHART_STYLE = 'Solarize_Light2'
+SAVE_FOLDER = './out_files/'
 
 db = sqlite3.connect(':memory:')
 
@@ -66,7 +67,6 @@ def build_stock_plot_chart_by_investor(investor: Investor) -> tuple[fig.Figure, 
     ax.set_ylabel('Shares Value', fontsize=14)
     ax.xaxis.set_major_locator(plt.MaxNLocator(8))
     plt.legend(loc='upper left')
-
     plt.xticks(rotation=45)
 
     return (fig, ax)
@@ -87,6 +87,8 @@ def main():
 
     build_stock_plot_chart_by_investor(investor)
 
+    today = datetime.today().strftime('%d_%m_%y').lower()
+    plt.savefig(f'{SAVE_FOLDER}{investor.name.replace(" ", "_").lower()}_{today}.pdf')
     plt.show()
 
     db.close()
