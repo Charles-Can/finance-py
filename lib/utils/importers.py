@@ -4,9 +4,11 @@
     Functionality: Collection of import util functions for CSV to stock & bond
 """
 import csv
+import json
 
 from ..finance.bond import Bond
 from ..finance.stock import Stock
+from ..finance.stock_price import StockPrice
 from .mapper import CSVPropertyMapper
 
 
@@ -37,7 +39,8 @@ def fill_from_csv(file_path, to_be_filled, mapper):
     return data_list
 
 
-def import_stocks(stocks_csv_file_path, investor):
+def import_stocks(stocks_csv_file_path) -> list[Stock]:
+    stocks = []
     """Imports CSV data and maps it a Stock"""
     try:
         # map csv indexes to Stock properties in files/
@@ -54,13 +57,14 @@ def import_stocks(stocks_csv_file_path, investor):
 
         # Loop through stock data and import it to investor
         for stock in stock_data:
-            investor.record_stock_purchase(stock)
+            stocks.append(stock)
     except Exception as e:
         # handle parse errors
         print(f'Failed to parse stocks for investor err::{str(e)}')
+    return stocks
 
-
-def import_bonds(bonds_csv_file_path, investor):
+def import_bonds(bonds_csv_file_path) -> list[Bond]:
+    bonds = []
     """Imports CSV data and maps it a Stock"""
     try:
         # map csv indexes to Bond properties in files/
@@ -79,7 +83,38 @@ def import_bonds(bonds_csv_file_path, investor):
 
         # Loop through stock data and import it to investor
         for bond in bond_data:
-            investor.record_bond_purchase(bond)
+            bonds.append(bond)
     except Exception as e:
         # handle parse errors
         print(f'Failed to parse bonds for investor err::{str(e)}')
+    return bonds
+
+def import_stock_price_history(json_file_path) -> list[StockPrice]:
+    prices = []
+
+    try:
+        price_mapper = CSVPropertyMapper() \
+            .add_mapping('Symbol', 'symbol') \
+            .add_mapping('Date', 'date') \
+            .add_mapping('Open', 'open') \
+            .add_mapping('High', 'high') \
+            .add_mapping('Low', 'low') \
+            .add_mapping('Close', 'close') \
+            .add_mapping('Volume', 'volume')
+        
+        with open(json_file_path) as json_data:
+            price_data = json.load(json_data)
+
+            for price in price_data:
+                stock_price = StockPrice()
+                price_mapper.map_properties(price, stock_price)
+                prices.append(stock_price)
+    
+    except FileNotFoundError:
+        # catch file errors
+        print(f'File: {file_path} not found!')
+    except Exception as e:
+        print(f'Failed to parse stock price history err::{str(e)}')
+    pass
+
+    return prices
