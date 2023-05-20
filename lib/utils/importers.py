@@ -9,7 +9,7 @@ import json
 from ..finance.bond import Bond
 from ..finance.stock import Stock
 from ..finance.stock_price import StockPrice
-from .mapper import CSVPropertyMapper
+from .mapper import PropertyMapper
 
 
 def fill_from_csv(file_path, to_be_filled, mapper):
@@ -44,7 +44,7 @@ def import_stocks(stocks_csv_file_path) -> list[Stock]:
     """Imports CSV data and maps it a Stock"""
     try:
         # map csv indexes to Stock properties in files/
-        stock_mapper = CSVPropertyMapper() \
+        stock_mapper = PropertyMapper() \
             .add_mapping(0, 'symbol') \
             .add_mapping(1, 'shares') \
             .add_mapping(2, 'purchase_price') \
@@ -68,7 +68,7 @@ def import_bonds(bonds_csv_file_path) -> list[Bond]:
     """Imports CSV data and maps it a Stock"""
     try:
         # map csv indexes to Bond properties in files/
-        bond_mapper = CSVPropertyMapper() \
+        bond_mapper = PropertyMapper() \
             .add_mapping(0, 'symbol') \
             .add_mapping(1, 'shares') \
             .add_mapping(2, 'purchase_price') \
@@ -93,7 +93,7 @@ def import_stock_price_history(json_file_path) -> list[StockPrice]:
     prices = []
 
     try:
-        price_mapper = CSVPropertyMapper() \
+        price_mapper = PropertyMapper() \
             .add_mapping('Symbol', 'symbol') \
             .add_mapping('Date', 'date') \
             .add_mapping('Open', 'open') \

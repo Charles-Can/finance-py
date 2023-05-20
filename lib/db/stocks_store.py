@@ -1,5 +1,5 @@
 from .table_object import TableObject
-from ..utils.mapper import CSVPropertyMapper
+from ..utils.mapper import PropertyMapper
 from ..finance import Stock
 
 
@@ -8,7 +8,7 @@ class StocksStore(TableObject):
     def __init__(self, connection):
         super().__init__(connection)
         self.__create_table__()
-        self.__mapper = CSVPropertyMapper() \
+        self.__mapper = PropertyMapper() \
             .add_mapping(0, 'id') \
             .add_mapping(1, 'investor_id') \
             .add_mapping(2, 'symbol') \

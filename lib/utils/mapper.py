@@ -6,7 +6,7 @@
 """
 
 
-class CSVPropertyMapper:
+class PropertyMapper:
     """Maps list indexes to a class properties"""
 
     def __init__(self):

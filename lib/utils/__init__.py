@@ -1,5 +1,5 @@
 from .printer import Printer
 
-from .mapper import CSVPropertyMapper
+from .mapper import PropertyMapper
 
 from .importers import *
