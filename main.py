@@ -7,7 +7,7 @@ import sqlite3
 
 from lib.finance import Investor
 from lib.utils import import_bonds, import_stocks, import_stock_price_history
-from lib.db import Investors, Stocks, Bonds
+from lib.db import Investors, Stocks, Bonds, StockPrices
 
 # Source data files
 BONDS_FILE_PATH = './files/Lesson6_Data_Bonds.csv'
@@ -19,6 +19,7 @@ db = sqlite3.connect(':memory:')
 investor_store = Investors(db)
 stock_store = Stocks(db)
 bond_store = Bonds(db)
+prices_store = StockPrices(db)
 
 def main():
 
@@ -41,9 +42,11 @@ def main():
         bond.investor_id = investor.id
         bond_store.insert(bond)
 
-    print([b.symbol for b in bond_store.select_by_investor_id(1)])
 
     prices = import_stock_price_history(STOCK_PRICES_FILE_PATH)
+
+    for price in prices:
+        prices_store.insert(price)
 
     # output report
     # generate_investor_report(investor)
