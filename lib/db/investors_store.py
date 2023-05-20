@@ -4,7 +4,7 @@ from ..finance import Investor
 from ..utils import CSVPropertyMapper
 
 
-class Investors(TableObject):
+class InvestorsStore(TableObject):
 
     def __init__(self, connection):
         super().__init__(connection)

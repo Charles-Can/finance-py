@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt, figure as fig, axes
 
 from lib.finance import Investor
 from lib.utils import import_bonds, import_stocks, import_stock_price_history
-from lib.db import Investors, Stocks, Bonds, StockPrices
+from lib.db import InvestorsStore, StocksStore, BondsStore, StockPricesStore
 
 # Source data files
 BONDS_FILE_PATH = './files/Lesson6_Data_Bonds.csv'
@@ -21,10 +21,10 @@ SAVE_FOLDER = './out_files/'
 
 db = sqlite3.connect(':memory:')
 
-investor_store = Investors(db)
-stock_store = Stocks(db)
-bond_store = Bonds(db)
-prices_store = StockPrices(db)
+investor_store = InvestorsStore(db)
+stock_store = StocksStore(db)
+bond_store = BondsStore(db)
+prices_store = StockPricesStore(db)
 
 
 def insert_stocks_from_file(file_path: str, investor_id: int):
