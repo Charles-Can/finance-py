@@ -3,7 +3,6 @@
     Date: 05/07/2023
     Functionality: Investor Class
 """
-from uuid import uuid1
 
 from ..utils.printer import Printer
 
@@ -12,7 +11,7 @@ class Investor:
     """Represents an Investor"""
 
     def __init__(self, name='', address='', phone_number=''):
-        self.id = uuid1()
+        self.id = None
         self.name = name
         self.address = address
         self.phone_number = phone_number

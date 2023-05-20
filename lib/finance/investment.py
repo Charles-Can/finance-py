@@ -3,8 +3,6 @@
     Date: 05/07/2023
     Functionality: (Abstract) Investment Class
 """
-from uuid import uuid1
-
 
 class Investment:
     """Represents an Investment"""
@@ -13,4 +11,4 @@ class Investment:
     """Reference owning investor"""
 
     def __init__(self):
-        self.id = uuid1()
+        self.id = None
