@@ -1,6 +1,6 @@
 """
     Author: Charles Candelaria
-    Date: 05/07/2023
+    Date: 05/20/2023
     Functionality: Collection of import util functions for CSV to stock, prices & bond
 """
 import csv
@@ -63,9 +63,10 @@ def import_stocks(stocks_csv_file_path) -> list[Stock]:
         print(f'Failed to parse stocks for investor err::{str(e)}')
     return stocks
 
+
 def import_bonds(bonds_csv_file_path) -> list[Bond]:
     bonds = []
-    """Imports CSV data and maps it a Stock"""
+    """Imports CSV data and maps it to a Stock"""
     try:
         # map csv indexes to Bond properties in files/
         bond_mapper = PropertyMapper() \
@@ -89,10 +90,13 @@ def import_bonds(bonds_csv_file_path) -> list[Bond]:
         print(f'Failed to parse bonds for investor err::{str(e)}')
     return bonds
 
+
 def import_stock_price_history(json_file_path) -> list[StockPrice]:
+    """Imports JSON data and maps it to a StockPrice"""
     prices = []
 
     try:
+        # Set up mapper @SEE ./files/AllStocks.json
         price_mapper = PropertyMapper() \
             .add_mapping('Symbol', 'symbol') \
             .add_mapping('Date', 'date') \
@@ -101,7 +105,7 @@ def import_stock_price_history(json_file_path) -> list[StockPrice]:
             .add_mapping('Low', 'low') \
             .add_mapping('Close', 'close') \
             .add_mapping('Volume', 'volume')
-        
+
         with open(json_file_path) as json_data:
             price_data = json.load(json_data)
 
@@ -109,7 +113,7 @@ def import_stock_price_history(json_file_path) -> list[StockPrice]:
                 stock_price = StockPrice()
                 price_mapper.map_properties(price, stock_price)
                 prices.append(stock_price)
-    
+
     except FileNotFoundError:
         # catch file errors
         print(f'File: {json_file_path} not found!')
