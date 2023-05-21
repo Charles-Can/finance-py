@@ -109,7 +109,7 @@ def main():
     today = datetime.today().strftime('%d_%m_%y').lower()
 
     plt.savefig(
-        f'{SAVE_FOLDER}{investor.name.replace(" ", "_").lower()}_{today}.pdf')
+        f'{SAVE_FOLDER}{investor.name.replace(" ", "_").lower()}_{today}.png')
     plt.show()
 
     # close db connection
