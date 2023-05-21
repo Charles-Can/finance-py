@@ -62,7 +62,7 @@ class BondsStore(TableObject):
             print(f'BondsStore:: failed insert Bond\n{str(e)}')
 
     def select_by_investor_id(self, id) -> list[Bond]:
-        """Retrieves Bonds for store by investor id"""
+        """Retrieves Bonds from store by investor id"""
         bonds = []
         try:
             q = self.q
