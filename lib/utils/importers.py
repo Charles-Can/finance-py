@@ -1,7 +1,7 @@
 """
     Author: Charles Candelaria
     Date: 05/07/2023
-    Functionality: Collection of import util functions for CSV to stock & bond
+    Functionality: Collection of import util functions for CSV to stock, prices & bond
 """
 import csv
 import json
