@@ -27,7 +27,7 @@ class BondsStore(TableObject):
         """Holds bond table tuple mapping to Bond"""
 
     def __create_table__(self):
-        """Creates bond table"""
+        """Creates bonds table"""
 
         self.q.execute("""
             CREATE TABLE IF NOT EXISTS bonds (
@@ -66,9 +66,17 @@ class BondsStore(TableObject):
         bonds = []
         try:
             q = self.q
-            data = q.execute("""SELECT rowid AS id, investor_id, symbol, shares, purchase_price, purchase_price, purchase_date, coupon, yield
-                                FROM bonds 
-                                WHERE investor_id = ?""",
+            data = q.execute("""SELECT  rowid AS id, 
+                                        investor_id, 
+                                        symbol, 
+                                        shares, 
+                                        purchase_price, 
+                                        purchase_price, 
+                                        purchase_date, 
+                                        coupon, 
+                                        yield
+                                FROM    bonds 
+                                WHERE   investor_id = ?""",
                              [id]).fetchall()
             for record in data:
                 bond = Bond()
