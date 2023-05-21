@@ -112,9 +112,8 @@ def import_stock_price_history(json_file_path) -> list[StockPrice]:
     
     except FileNotFoundError:
         # catch file errors
-        print(f'File: {file_path} not found!')
+        print(f'File: {json_file_path} not found!')
     except Exception as e:
         print(f'Failed to parse stock price history err::{str(e)}')
-    pass
 
     return prices
