@@ -3,34 +3,30 @@
     Date: 05/20/2023
     Functionality: Collection of import util functions for CSV to stock, prices & bond
 """
+from typing import Any, TypeVar
+
 import csv
 import json
+import pandas as pd
 
 from ..finance.bond import Bond
 from ..finance.stock import Stock
 from ..finance.stock_price import StockPrice
 from .mapper import PropertyMapper
 
+T = TypeVar('T')
 
-def fill_from_csv(file_path, to_be_filled, mapper):
+
+def fill_from_csv(file_path: str, to_be_filled: T, mapper: PropertyMapper) -> list[T]:
     """maps a CSV file to a collection of Objects"""
     data_list = []
     try:
-        with open(file_path) as file_data:
-            # read csv
-            reader = csv.reader(file_data)
-            # track header to skip
-            isHeader = True
-            for line in reader:
-                # iterate csv lines
-                if not isHeader:
-                    # if not header map lin to object with mapper
-                    instance = to_be_filled()
-                    mapper.map_properties(line, instance)
-                    # push mapped object to list
-                    data_list.append(instance)
-                # mark header skipped
-                isHeader = False
+        data = pd.read_csv(file_path)
+
+        for _, row in data.iterrows():
+            instance = to_be_filled()
+            mapper.map_properties(row, instance)
+            data_list.append(instance)
 
     except FileNotFoundError:
         # catch file errors
@@ -45,16 +41,16 @@ def import_stocks(stocks_csv_file_path) -> list[Stock]:
     try:
         # map csv indexes to Stock properties in files/
         stock_mapper = PropertyMapper() \
-            .add_mapping(0, 'symbol') \
-            .add_mapping(1, 'shares') \
-            .add_mapping(2, 'purchase_price') \
-            .add_mapping(3, 'current_value') \
-            .add_mapping(4, 'purchase_date')
+            .add_mapping(lambda x: x['SYMBOL'], 'symbol') \
+            .add_mapping(lambda x: x['NO_SHARES'], 'shares') \
+            .add_mapping(lambda x: x['PURCHASE_PRICE'], 'purchase_price') \
+            .add_mapping(lambda x: x['CURRENT_VALUE'], 'current_value') \
+            .add_mapping(lambda x: x['PURCHASE_DATE'], 'purchase_date')
 
         # Extract data from CSV
-        stock_data: list[Stock] = fill_from_csv(
+        stock_data = fill_from_csv(
             stocks_csv_file_path, Stock, stock_mapper)
-
+        
         # Loop through stock data and import it to investor
         for stock in stock_data:
             stocks.append(stock)
@@ -70,13 +66,13 @@ def import_bonds(bonds_csv_file_path) -> list[Bond]:
     try:
         # map csv indexes to Bond properties in files/
         bond_mapper = PropertyMapper() \
-            .add_mapping(0, 'symbol') \
-            .add_mapping(1, 'shares') \
-            .add_mapping(2, 'purchase_price') \
-            .add_mapping(3, 'current_value') \
-            .add_mapping(4, 'purchase_date') \
-            .add_mapping(5, 'coupon') \
-            .add_mapping(6, 'bond_yield')
+            .add_mapping(lambda x: x['SYMBOL'], 'symbol') \
+            .add_mapping(lambda x: x['NO_SHARES'], 'shares') \
+            .add_mapping(lambda x: x['PURCHASE_PRICE'], 'purchase_price') \
+            .add_mapping(lambda x: x['CURRENT_VALUE'], 'current_value') \
+            .add_mapping(lambda x: x['PURCHASE_DATE'], 'purchase_date') \
+            .add_mapping(lambda x: x['COUPON'], 'coupon') \
+            .add_mapping(lambda x: x['bond_yield'], 'bond_yield')
 
         # Extract data from CSV
         bond_data: list[Stock] = fill_from_csv(
