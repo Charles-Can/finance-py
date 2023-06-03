@@ -1,6 +1,6 @@
-# Charles Candelaria | PROGRAMMING ASSIGNMENT 8 - STOCKS WITH DATABASES AND DATA VISUALIZATION
+# Stocks Price Havester with Visualization
 
-## Assignment Description
+## Description
 This script generates a line plot for stock values in a portfolio.
 
 Steps:
@@ -41,3 +41,13 @@ All files provided from course material in canvas
 **Note: There was a typo fixed in the `Lesson6_Data_Stocks.csv` where stock GOOG was GOOGL**
 
 
+## Harvesting Stock data
+Stock data can be downloaded using [polygon.io](https://polygon.io/docs/stocks/get_v1_open-close__stocksticker___date) for open and close prices. You can register for a 
+free account [here](https://polygon.io/stocks).
+
+**Note: Using the free account limits request to 5 per minute** 
+### Harvesting Price data
+```bash
+# OSX bash command
+python3 stock_price_harvester.py <api-key>
+```
