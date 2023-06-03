@@ -87,9 +87,9 @@ API_KEY = None
 STOCK_SYMBOLS = [
     'GOOG',
     'MSFT',
-    'RDS-A',
+    # 'RDS-A', removing because stock does not exist anymore
     'AIG',
-    'FB',
+    'META',
     'M',
     'F',
     'IBM'
@@ -103,7 +103,6 @@ Holds stock summary of data.
     tail: first date recorded for stock
     head: last date recorded for stock
     status: pending | complete @See HarvestStatus
-    request_count: int of current request attempt for a given price and date
 """
 
 # Load stocks
@@ -128,8 +127,7 @@ def build_stock_dates():
         STOCK_DATES[symbol] = {
             'head': max_date if ts_gte(max_date, EARLIEST_DATE) else EARLIEST_DATE,
             'tail': min_date,
-            'status': HarvestStatus.COMPLETE if ts_gte(max_date, get_start_of_today()) else HarvestStatus.PENDING,
-            'request_count': 0
+            'status': HarvestStatus.COMPLETE if ts_gte(max_date, get_start_of_today()) else HarvestStatus.PENDING
         }
 
 
@@ -148,20 +146,21 @@ def main():
 
         if data['status'] == HarvestStatus.PENDING:
             # only request for pending stocks
+            request_count = 0
 
             while ts_lte(data['head'], get_start_of_today() - timedelta(days=1)):
                 # keep requesting until we reach today
 
                 req_date = data['head'] + timedelta(days=1)  # advance one day
 
-                data['request_count'] += 1  # increment request count
+                request_count += 1  # increment request count
 
                 print(f'symbol:{symbol}')
                 print(f'date:{req_date.strftime("%Y-%m-%d")}')
 
                 # make api request
                 response = requests.get(
-                    f'https://api.polygon.io/v1/open-close/{symbol.upper()}/{req_date.strftime("%Y-%m-%d")}?apiKey={API_KEY}').json()
+                    f'https://api.polygon.io/v1/open-close/{symbol.replace("-", "").upper()}/{req_date.strftime("%Y-%m-%d")}?apiKey={API_KEY}').json()
 
                 # handle api error responses
                 if response.get('status', 'ERROR') == 'ERROR':
@@ -169,37 +168,37 @@ def main():
                         print('hit api request limit, waiting one minute...')
                         # wait on minute and then retry with out advancing date
                         time.sleep(61)
-                    elif data.get('request_count', 3) == MAX_RETRIES:
+                    elif request_count >= MAX_RETRIES:
                         # max retries hit reset to next date and continue
                         print(
                             f'Max retries hit for {symbol}:{str(req_date)} message: {response.get("error", "NO_ERROR_SUPPLIED")}')
                         print('Moving to next date')
                         data['head'] = req_date
-                        data['request_count'] = 0
+                        request_count = 0
                     else:
                         # some other error, retry and hope for the best
                         print(response)
                         print(
-                            f'Request [count {data.get("request_count", MAX_RETRIES)}] for {symbol}:{str(req_date)} failed with {response.get("error", "NO_ERROR_SUPPLIED")}')
+                            f'Request [count {request_count}] for {symbol}:{str(req_date)} failed with {response.get("error", "NO_ERROR_SUPPLIED")}')
                         print('retrying...')
 
                     continue  # restart loop
                 elif response.get('status', '') == 'NOT_FOUND':
                     # no data for this symbol & date move on
-                    print(f'No data for {symbol}:{str(req_date)}')
+                    print(f'No data for {symbol.replace("-", "")}:{str(req_date)}')
                     data['head'] = req_date
                     continue
 
                 data['head'] = req_date  # advance date for next iteration
-                data['request_count'] = 0  # reset request count
+                request_count = 0  # reset request count
 
                 # create new row for json file
                 new_row = {
                     'Symbol': response.get('symbol', 'not_supplied'),
                     'Date': pd.to_datetime(response['from']),
-                    'Open': str(response['open']),
-                    'High': str(response['high']),
-                    'Low': str(response['low']),
+                    'Open': response['open'],
+                    'High': response['high'],
+                    'Low': response['low'],
                     'Close': response['close'],
                     'Volume': int(response['volume'])
                 }
