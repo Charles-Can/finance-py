@@ -14,7 +14,8 @@ from lib.db import InvestorsStore, StocksStore, BondsStore, StockPricesStore
 # Source data files
 BONDS_FILE_PATH = './files/Lesson6_Data_Bonds.csv'
 STOCKS_FILE_PATH = './files/Lesson6_Data_Stocks.csv'
-STOCK_PRICES_FILE_PATH = './files/AllStocks.json'
+# STOCK_PRICES_FILE_PATH = './files/AllStocks.json'
+STOCK_PRICES_FILE_PATH = './files/stock_price_data.json'
 
 # app contsants
 CHART_STYLE = 'Solarize_Light2'

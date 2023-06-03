@@ -71,8 +71,8 @@ def import_bonds(bonds_csv_file_path) -> list[Bond]:
             .add_mapping(lambda x: x['PURCHASE_PRICE'], 'purchase_price') \
             .add_mapping(lambda x: x['CURRENT_VALUE'], 'current_value') \
             .add_mapping(lambda x: x['PURCHASE_DATE'], 'purchase_date') \
-            .add_mapping(lambda x: x['COUPON'], 'coupon') \
-            .add_mapping(lambda x: x['bond_yield'], 'bond_yield')
+            .add_mapping(lambda x: x['Coupon'], 'coupon') \
+            .add_mapping(lambda x: x['Yield'], 'bond_yield')
 
         # Extract data from CSV
         bond_data: list[Stock] = fill_from_csv(
