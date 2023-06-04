@@ -107,6 +107,9 @@ Holds stock summary of data.
 # Load stocks
 working_df = pd.read_json(FILE_PATH)
 
+if len(working_df) == 0:
+    working_df = pd.DataFrame(columns=['Symbol', 'Date', 'Open', 'High', 'Low', 'Close', 'Volume'])
+
 
 def build_stock_dates():
     """Creates a stock_date entry for each symbol in the stock symbols list"""
