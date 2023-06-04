@@ -87,7 +87,6 @@ API_KEY = None
 STOCK_SYMBOLS = [
     'GOOG',
     'MSFT',
-    # 'RDS-A', removing because stock does not exist anymore
     'AIG',
     'META',
     'M',
@@ -132,7 +131,7 @@ def build_stock_dates():
 
 
 def main():
-    # require api key 
+    # require api key
     if len(sys.argv) < 2:
         print(f'Please provide polygon.io api key')
         sys.exit(2)
@@ -154,14 +153,20 @@ def main():
                 req_date = data['head'] + timedelta(days=1)  # advance one day
 
                 request_count += 1  # increment request count
+                response = None # @todo - should be typed as a response dataclass or None
 
                 print(f'symbol:{symbol}')
                 print(f'date:{req_date.strftime("%Y-%m-%d")}')
 
-                # make api request
-                response = requests.get(
-                    f'https://api.polygon.io/v1/open-close/{symbol.replace("-", "").upper()}/{req_date.strftime("%Y-%m-%d")}?apiKey={API_KEY}').json()
-
+                try:
+                    # make api request
+                    response = requests.get(
+                        f'https://api.polygon.io/v1/open-close/{symbol.upper()}/{req_date.strftime("%Y-%m-%d")}?apiKey={API_KEY}').json()
+                except Exception as e:
+                    response = {
+                        'status': 'ERROR',
+                        'ERROR': f'Request failed {str(e)}'
+                    }
                 # handle api error responses
                 if response.get('status', 'ERROR') == 'ERROR':
                     if 'exceeded the maximum requests' in response.get('error', ''):
@@ -185,7 +190,8 @@ def main():
                     continue  # restart loop
                 elif response.get('status', '') == 'NOT_FOUND':
                     # no data for this symbol & date move on
-                    print(f'No data for {symbol.replace("-", "")}:{str(req_date)}')
+                    print(
+                        f'No data for {symbol.replace("-", "")}:{str(req_date)}')
                     data['head'] = req_date
                     continue
 
