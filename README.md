@@ -1,5 +1,6 @@
 # Stocks Price Havester with Visualization
 
+
 ## Description
 This script generates a line plot for stock values in a portfolio.
 
@@ -13,6 +14,9 @@ Steps:
 7. Queries historical stock pricing for each stock symbol in portfolio
 8. User `matplotlib` to generate visualization of data
 9. Saves report for investor to `out_files/` for investor
+
+## Requirements
+- Python 3.10 and above
 
 ### Sample Visualization
 ![Sample Plot](./documents/bob_smith_20_05_23.png)
